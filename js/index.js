@@ -1,4 +1,4 @@
-let productList = []
+let productsList = []
 let carts = []
 
 const fetchProduct = async () => {
@@ -7,8 +7,8 @@ const fetchProduct = async () => {
             url: "https://5bd2959ac8f9e400130cb7e9.mockapi.io/api/products",
             method: "GET"
         });
-        productList = mapProduct(res.data)
-        renderProducts(productList);
+        productsList = mapProduct(res.data)
+        renderProducts(productsList);
     }
     catch (err) {
         console.log(err);
@@ -16,23 +16,22 @@ const fetchProduct = async () => {
 }
 
 const renderProducts = function (data) {
-    data = data || ProductList;
+    data = data || ProductsList;
     var dataHTML = ""
     for (var i = 0; i < data.length; i++) {
         dataHTML += `
-            <div class="col-3 text-center">
-                <div class="img">
-                    <img src=${data[i].img} >
+        
+            <div class="col-4 ">
+                <div class="card">
+                    <img src=${data[i].img} class="card-img-top" width="100px" >
+                    <div class="card-body">
+                        <p>${data[i].desc}</p>
+                    </div>
+                    <div class="btn-group" role="group" aria-label="Basic mixed styles example">    
+                        <a type="button" href="#cart-shop"><button class="btn btn-success"  onclick="addToCarts(${data[i].id})" >Cart</button></a>
+                    
+                    </div>
                 </div>
-                <div class="text">
-                    <p style="font-size: 12px">${data[i].desc}</p>
-                </div>
-                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                    <button type="button" class="btn btn-danger" onclick="deleteProduct(${data[i].id})">Xóa</button>
-                    <a type="button" href="#cart-shop"><button class="btn btn-success mx-3" onclick="addToCarts(${data[i].id})" >Cart</button></a>
-                    <a href="#formQLSP"><button type="button" class="btn btn-danger" onclick="getProduct(${data[i].id})">Sửa</button></a>
-                </div>
-                
             </div>
  
     `
@@ -45,15 +44,13 @@ const renderCarts = (data) => {
     for (var i = 0; i < data.length; i++) {
         sum += parseInt(data[i].price) * parseInt(data[i].quantity)
     }
-    // const sum = data.reduce((itemprev, item) => { return itemprev.quantity * itemprev.price + item.quantity * item.price }, 0)
-    // console.log(sum)
     var dataHTML = "";
     for (var i = 0; i < data.length; i++) {
         dataHTML += `
         <tr>
-            <td>
-            <img src=${data[i].img} width="100px" height="100px">
-            </td>
+            <th>
+                <img src=${data[i].img} width="100px" height="100px">
+            </th>
             <td>
             <p class="fs-5">${data[i].name}</p></td>
             <td>${data[i].price}</td>
@@ -70,8 +67,9 @@ const renderCarts = (data) => {
     `
     }
     dataHTML += `
-    <h1>Tổng tiền: ${sum}</h1>
-    <button class="btn btn-success class=" text-center" onclick="handlePay()">Thanh toán</button>
+    <h1 class="text-right">Tổng tiền: ${sum}
+        <button class="btn btn-success class="text-right" onclick="handlePay()">Thanh toán</button>
+    </h1>
     `
 
     document.getElementById('cart').innerHTML = dataHTML;
@@ -85,7 +83,7 @@ const logic = (product) => {
 }
 const mapProduct = (data) => {
     const results = data.map((item, i) => {
-        return new ProductList(
+        return new Product(
             item.name,
             item.price,
             item.screen,
@@ -104,7 +102,7 @@ const mapProduct = (data) => {
 const handleSearch = () => {
     const type = document.getElementById("type").value;
 
-    let temp = productList.filter((item) => {
+    let temp = productsList.filter((item) => {
         if (type === "All") {
             return item
         }
@@ -115,7 +113,7 @@ const handleSearch = () => {
 
 //Add a product into Cart
 const addToCarts = (productId) => {
-    const a = [...productList]
+    const a = [...productsList]
     const index = carts.findIndex(
         (product) => product.id == productId
     )
@@ -184,7 +182,7 @@ var mapData = function (dataFromLocal) {
     var data = [];
     for (var i = 0; i < dataFromLocal.length; i++) {
         var currentProduct = dataFromLocal[i];
-        var mappedProduct = new ProductList(
+        var mappedProduct = new Product(
             currentProduct.name,
             currentProduct.price,
             currentProduct.screen,
